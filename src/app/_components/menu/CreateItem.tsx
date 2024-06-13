@@ -36,20 +36,25 @@ const CreateItem = () => {
   type CreateItemsSchema = z.infer<typeof createItemSchema>;
 
   const createItemSchema = z.object({
-    name: z.string().min(4, {message:'o campo de nome deve ser preechido  '}),
+    name: z
+      .string()
+      .min(4, { message: "o campo de nome deve ser preechido  " }),
     description: z.string(),
     category: z.custom<categoryType>(),
   });
 
-
-  const { register, handleSubmit,formState, formState: {errors}, resetField, reset } =
-    useForm<CreateItemsSchema>({
-      resolver: zodResolver(createItemSchema),
-    });
+  const {
+    register,
+    handleSubmit,
+    formState,
+    formState: { errors },
+    resetField,
+    reset,
+  } = useForm<CreateItemsSchema>({
+    resolver: zodResolver(createItemSchema),
+  });
 
   function handleCreateItem(data: CreateItemsSchema) {
-    const result = createItemSchema.safeParse({data})
-    
     const { name, description, category } = data;
 
     createItem.mutate({
@@ -58,7 +63,6 @@ const CreateItem = () => {
       category,
     });
   }
-  onerror
 
   React.useEffect(() => {
     if (formState.isSubmitSuccessful) {
@@ -70,8 +74,9 @@ const CreateItem = () => {
   }, [formState, reset, resetField]);
 
   return (
-    <form onSubmit={handleSubmit(handleCreateItem, onerror)}>
-      <Input placeholder="Insira o nome do item aqui" {...register("name")} /> 
+    <form onSubmit={handleSubmit(handleCreateItem)}>
+      <Input placeholder="Insira o nome do item aqui" {...register("name")} />{" "}
+      {errors.name && }
       <Input
         placeholder="Insira a descrição do item"
         {...register("description")}
