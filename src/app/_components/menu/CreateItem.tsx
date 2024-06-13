@@ -6,13 +6,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import React from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { ZodError, getErrorMap, z } from "zod";
+import { z } from "zod";
 import { type categoryType } from "@/server/api/routers/menu";
 import { useToast } from "@/components/ui/use-toast";
 import { Toaster } from "@/components/ui/toaster";
 import { type TRPCClientErrorLike } from "@trpc/client";
 import { type AppRouter } from "@/server/api/root";
-import errorMap from "zod/locales/en.js";
 
 const CreateItem = () => {
   const router = useRouter();
@@ -23,12 +22,12 @@ const CreateItem = () => {
       router.refresh();
       toast.toast({
         title: "Item criado com sucesso",
-        status: "success",
       });
     },
     onError: (error: TRPCClientErrorLike<AppRouter>) => {
       toast.toast({
         title: error.message,
+        variant: "destructive",
       });
     },
   });
@@ -36,12 +35,10 @@ const CreateItem = () => {
   type CreateItemsSchema = z.infer<typeof createItemSchema>;
 
   const createItemSchema = z.object({
-    name: z
-      .string()
-      .min(4, { message: "o campo de nome deve ser preechido  " }),
+    name: z.string().min(1, { message: "Insira um nome" }),
     description: z.string(),
     category: z.custom<categoryType>(),
-  });
+  }).required();
 
   const {
     register,
@@ -74,18 +71,28 @@ const CreateItem = () => {
   }, [formState, reset, resetField]);
 
   return (
-    <form onSubmit={handleSubmit(handleCreateItem)}>
-      <Input placeholder="Insira o nome do item aqui" {...register("name")} />{" "}
-      {errors.name && }
+    <form
+      className="flex min-w-64 flex-col content-center justify-center gap-2"
+      onSubmit={handleSubmit(handleCreateItem)}
+    >
+      <label className="inline min-w-max ">
+        <Input
+          className="inline"
+          placeholder="Nome"
+          {...register("name")}
+        />
+        {errors.name && <span className="inline">{errors.name.message}</span>}
+      </label>
+
       <Input
-        placeholder="Insira a descrição do item"
+        placeholder="Descrição"
         {...register("description")}
       />
       <Input
-        placeholder="Insira o nome da categoria aqui"
+        placeholder="Categoria"
         {...register("category")}
       />
-      <Button>Crie o item</Button>
+      <Button className="mx-4 w-max self-end">Crie o item</Button>
       <Toaster />
     </form>
   );
