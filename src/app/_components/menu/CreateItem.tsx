@@ -24,7 +24,8 @@ const CreateItem = () => {
         title: "Item criado com sucesso",
       });
     },
-    onError: (error: TRPCClientErrorLike<AppRouter>) => {
+    onError: (error) => {
+      console.log(error.message);
       toast.toast({
         title: error.message,
         variant: "destructive",
