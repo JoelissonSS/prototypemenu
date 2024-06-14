@@ -25,7 +25,7 @@ const CreateItem = () => {
       });
     },
     onError: (error) => {
-      console.log(error.message);
+      console.log(JSON.parse(error.message));
       toast.toast({
         title: error.message,
         variant: "destructive",

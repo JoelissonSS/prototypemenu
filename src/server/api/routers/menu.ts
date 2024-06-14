@@ -33,13 +33,15 @@ export const menuRouter = createTRPCRouter({
           code: "BAD_REQUEST",
           message: validateData.error.message,
         });
+      } else {
+        if (existing) {
+          throw new TRPCError({
+            code: "CONFLICT",
+            message: "Item já existe",
+          });
+        }
       }
-      if (existing) {
-        throw new TRPCError({
-          code: "CONFLICT",
-          message: "Item já existe",
-        });
-      }
+      
     }),
   getItems: publicProcedure.query(async ({ ctx }) => {
     return await ctx.db.item.findMany();
