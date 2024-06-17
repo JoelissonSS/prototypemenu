@@ -7,11 +7,20 @@ import React from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { z } from "zod";
-import { type categoryType } from "@/server/api/routers/menu";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "@/components/ui/use-toast";
 import { Toaster } from "@/components/ui/toaster";
 import { type TRPCClientErrorLike } from "@trpc/client";
 import { type AppRouter } from "@/server/api/root";
+
+import { Select, SelectItem } from "@/components/ui/select";
+import {
+  SelectContent,
+  SelectGroup,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import CreateCategory from "./CreateCategory";
 
 interface ErrorJsonType {
   code: string;
@@ -27,19 +36,21 @@ interface ErrorJsonType {
 
 const CreateItem = () => {
   const router = useRouter();
-  const toast = useToast();
+  const getCategories = api.menu.getCategories.useQuery();
+  const categories = getCategories.data;
 
   const createItem = api.menu.createItem.useMutation({
     onSuccess: () => {
       router.refresh();
-      toast.toast({
+      toast({
         title: "Item criado com sucesso",
       });
     },
     onError: (error: TRPCClientErrorLike<AppRouter>) => {
       const errorJson = JSON.parse(error.message) as ErrorJsonType[];
       const errors = errorJson.map((err) => err.message);
-      toast.toast({
+      console.log(error);
+      toast({
         title: "Item não foi criado",
         variant: "destructive",
         description: (
@@ -53,15 +64,15 @@ const CreateItem = () => {
     },
   });
 
-  type CreateItemsSchema = z.infer<typeof createItemSchema>;
+  type createItemsType = z.infer<typeof createItemSchema>;
 
   const createItemSchema = z
     .object({
-      name: z.string().min(1, { message: "Insira um nome" }),
+      name: z.string().min(3, { message: "Insira um nome" }),
       description: z.string(),
-      category: z.custom<categoryType>(),
-    })
-    .required();
+      category: z.string()
+    }).required()
+    
 
   const {
     register,
@@ -70,13 +81,13 @@ const CreateItem = () => {
     formState: { errors },
     resetField,
     reset,
-  } = useForm<CreateItemsSchema>({
+  } = useForm<createItemsType>({
     resolver: zodResolver(createItemSchema),
   });
 
-  function handleCreateItem(data: CreateItemsSchema) {
+  function handleCreateItem(data: createItemsType) {
     const { name, description, category } = data;
-
+    console.log(`categoria: ${category}`);
     createItem.mutate({
       name,
       description,
@@ -104,7 +115,29 @@ const CreateItem = () => {
       </label>
 
       <Input placeholder="Descrição" {...register("description")} />
-      <Input placeholder="Categoria" {...register("category")} />
+      
+        <Select {...register("category")}>
+          <SelectTrigger className="w-full" {...register("category")}>
+            <SelectValue {...register("category")} placeholder="Categoria" />
+          </SelectTrigger>
+
+          <SelectContent {...register("category")}>
+            <SelectGroup {...register("category")}>
+              <SelectLabel {...register("category")}>Categorias</SelectLabel>
+              {categories?.map((category, index) => (
+                <SelectItem
+                  className=" min-w-full hover:bg-slate-400"
+                  key={index}
+                  value={category.name}
+                >
+                  {category.name}
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+        <CreateCategory />
+      
       <Button className="mx-4 w-max self-end">Crie o item</Button>
       <Toaster />
     </form>
