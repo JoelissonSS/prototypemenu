@@ -81,6 +81,7 @@ const CreateItem = () => {
     formState: { errors },
     resetField,
     reset,
+    setValue
   } = useForm<createItemsType>({
     resolver: zodResolver(createItemSchema),
   });
@@ -116,14 +117,14 @@ const CreateItem = () => {
 
       <Input placeholder="Descrição" {...register("description")} />
       
-        <Select {...register("category")}>
-          <SelectTrigger className="w-full" {...register("category")}>
-            <SelectValue {...register("category")} placeholder="Categoria" />
+        <Select onValueChange={(value) => setValue('category', value)}>
+          <SelectTrigger className="w-full">
+            <SelectValue placeholder="Categoria" />
           </SelectTrigger>
 
-          <SelectContent {...register("category")}>
-            <SelectGroup {...register("category")}>
-              <SelectLabel {...register("category")}>Categorias</SelectLabel>
+          <SelectContent>
+            <SelectGroup>
+              <SelectLabel>Categorias</SelectLabel>
               {categories?.map((category, index) => (
                 <SelectItem
                   className=" min-w-full hover:bg-slate-400"
