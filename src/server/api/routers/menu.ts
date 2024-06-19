@@ -58,5 +58,18 @@ export const menuRouter = createTRPCRouter({
   getCategories: publicProcedure.query( async ({ ctx }) => {
     return await ctx.db.category.findMany();
   }),
+  deleteCategory: publicProcedure
+    .input(
+      z.object({
+        name: z.string()
+      })
+    )
+    .mutation(async ({input, ctx}) => {
+      return await ctx.db.category.delete({
+        where: {
+          name: input.name
+        }
+      })
+    })
   
 });

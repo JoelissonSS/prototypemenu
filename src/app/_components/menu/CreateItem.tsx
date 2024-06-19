@@ -21,6 +21,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import CreateCategory from "./CreateCategory";
+import DeleteCategory from "./DeleteCategory";
+import ManageCategories from "../ManageCategories";
 
 interface ErrorJsonType {
   code: string;
@@ -70,9 +72,9 @@ const CreateItem = () => {
     .object({
       name: z.string().min(3, { message: "Insira um nome" }),
       description: z.string(),
-      category: z.string()
-    }).required()
-    
+      category: z.string(),
+    })
+    .required();
 
   const {
     register,
@@ -81,7 +83,7 @@ const CreateItem = () => {
     formState: { errors },
     resetField,
     reset,
-    setValue
+    setValue,
   } = useForm<createItemsType>({
     resolver: zodResolver(createItemSchema),
   });
@@ -104,7 +106,6 @@ const CreateItem = () => {
       reset();
     }
   }, [formState, reset, resetField]);
-
   return (
     <form
       className="flex min-w-64 flex-col content-center justify-center gap-2"
@@ -116,29 +117,29 @@ const CreateItem = () => {
       </label>
 
       <Input placeholder="Descrição" {...register("description")} />
-      
-        <Select onValueChange={(value) => setValue('category', value)}>
-          <SelectTrigger className="w-full">
-            <SelectValue placeholder="Categoria" />
-          </SelectTrigger>
 
-          <SelectContent>
-            <SelectGroup>
-              <SelectLabel>Categorias</SelectLabel>
-              {categories?.map((category, index) => (
-                <SelectItem
-                  className=" min-w-full hover:bg-slate-400"
-                  key={index}
-                  value={category.name}
-                >
-                  {category.name}
-                </SelectItem>
-              ))}
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-        <CreateCategory />
-      
+      <Select onValueChange={(value) => setValue("category", value)}>
+        <SelectTrigger className="w-full">
+          <SelectValue placeholder="Categoria" />
+        </SelectTrigger>
+
+        <SelectContent>
+          <SelectGroup className="relative">
+            <SelectLabel>Categorias</SelectLabel>
+            {categories?.map((category, index) => (
+              <SelectItem
+                className=" min-w-full hover:bg-slate-400"
+                key={index}
+                value={category.name}
+              >
+                {category.name}
+              </SelectItem>
+            ))}
+          </SelectGroup>
+        </SelectContent>
+      </Select>
+      <ManageCategories />
+
       <Button className="mx-4 w-max self-end">Crie o item</Button>
       <Toaster />
     </form>
