@@ -20,8 +20,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import CreateCategory from "./CreateCategory";
-import DeleteCategory from "./DeleteCategory";
 import ManageCategories from "../ManageCategories";
 
 interface ErrorJsonType {
