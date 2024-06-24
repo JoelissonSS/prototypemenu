@@ -11,7 +11,6 @@ import { toast } from "@/components/ui/use-toast";
 import { Toaster } from "@/components/ui/toaster";
 import { type TRPCClientErrorLike } from "@trpc/client";
 import { type AppRouter } from "@/server/api/root";
-
 import { Select, SelectItem } from "@/components/ui/select";
 import {
   SelectContent,
@@ -21,6 +20,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import ManageCategories from "../ManageCategories";
+import { LoaderCircle } from "lucide-react";
 
 interface ErrorJsonType {
   code: string;
@@ -63,14 +63,13 @@ const CreateItem = () => {
       });
     },
   });
-
   type createItemsType = z.infer<typeof createItemSchema>;
 
   const createItemSchema = z
     .object({
       name: z.string().min(3, { message: "Insira um nome" }),
-      description: z.string(),
-      category: z.string(),
+      description: z.string({message: 'insira uma descrição'}),
+      category: z.string({message: 'categoria não selecionada'}),
     })
     .required();
 
@@ -88,7 +87,6 @@ const CreateItem = () => {
 
   function handleCreateItem(data: createItemsType) {
     const { name, description, category } = data;
-    console.log(`categoria: ${category}`);
     createItem.mutate({
       name,
       description,
@@ -111,7 +109,7 @@ const CreateItem = () => {
     >
       <label className="inline min-w-max ">
         <Input className="inline" placeholder="Nome" {...register("name")} />
-        {errors.name && <span className="inline">{errors.name.message}</span>}
+        
       </label>
 
       <Input placeholder="Descrição" {...register("description")} />
@@ -137,8 +135,12 @@ const CreateItem = () => {
         </SelectContent>
       </Select>
       <ManageCategories />
+      {errors.name && <span className="inline">{errors.name.message}</span>}
+      {errors.description && <span className="inline">{errors.description.message}</span>}
+      {errors.category && <span className="inline">{errors.category.message}</span>}
 
-      <Button className="mx-4 w-max self-end">Crie o item</Button>
+      
+      <Button className="mx-4 w-max self-end">{!createItem.isPending? 'Criar Item': <LoaderCircle className="animate-spin"/>}</Button>
       <Toaster />
     </form>
   );

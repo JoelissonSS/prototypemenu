@@ -20,6 +20,7 @@ export const menuRouter = createTRPCRouter({
     .mutation(async ({ input, ctx }) => {
       
       try {
+        
         return await ctx.db.item.create({
           data: {
             name: input.name,
@@ -65,11 +66,16 @@ export const menuRouter = createTRPCRouter({
       })
     )
     .mutation(async ({input, ctx}) => {
-      return await ctx.db.category.delete({
+      return await ctx.db.item.deleteMany({
+        where: {
+          categoryName: input.name
+        }
+      }), await ctx.db.category.deleteMany({
         where: {
           name: input.name
         }
       })
+      
     })
   
 });

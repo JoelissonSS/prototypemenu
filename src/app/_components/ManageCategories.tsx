@@ -15,10 +15,9 @@ import { WrenchIcon } from "lucide-react";
 const ManageCategories = () => {
   const getCategories = api.menu.getCategories.useQuery();
   const categories = getCategories.data;
-
+  
   return (
-    <Dialog>
-      <CreateCategory />
+    <Dialog >
       <DialogTrigger>
         <WrenchIcon />
       </DialogTrigger>
@@ -27,7 +26,10 @@ const ManageCategories = () => {
           <DialogTitle>Gerenciar categorias</DialogTitle>
           <DialogDescription>
             {categories?.map((category, index) => (
-              <p className=" min-w-full hover:bg-slate-400 flex justify-between" key={index}>
+              <p
+                className=" flex min-w-full justify-between hover:bg-slate-400"
+                key={index}
+              >
                 {category.name}
                 <DeleteCategory name={category.name} />
               </p>
