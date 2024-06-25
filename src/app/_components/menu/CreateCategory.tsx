@@ -44,7 +44,8 @@ const CreateCategory = () => {
     });
   }
   return (
-    <Dialog>
+    <Dialog
+    >
       <DialogTrigger>
         <PlusIcon />
       </DialogTrigger>
@@ -52,8 +53,9 @@ const CreateCategory = () => {
         <DialogHeader>
           <DialogTitle>Criar mais uma categoria</DialogTitle>
           <DialogDescription>
-            <form className="flex flex-col " onSubmit={handleSubmit(handleCreateCategory)}>
+            <form className="flex flex-col gap-2" onSubmit={handleSubmit(handleCreateCategory)}>
               <Input
+              
                 placeholder="Insira o nome da categoria"
                 {...register("name")}
               />

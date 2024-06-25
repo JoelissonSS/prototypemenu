@@ -45,6 +45,8 @@ const CreateItem = () => {
       toast({
         title: "Item criado com sucesso",
       });
+      resetField("description");
+      resetField("name");
     },
     onError: (error: TRPCClientErrorLike<AppRouter>) => {
       const errorJson = JSON.parse(error.message) as ErrorJsonType[];
@@ -68,18 +70,16 @@ const CreateItem = () => {
   const createItemSchema = z
     .object({
       name: z.string().min(3, { message: "Insira um nome" }),
-      description: z.string({message: 'insira uma descrição'}),
-      category: z.string({message: 'categoria não selecionada'}),
+      description: z.string({ message: "insira uma descrição" }),
+      category: z.string({ message: "categoria não selecionada" }),
     })
     .required();
 
   const {
     register,
     handleSubmit,
-    formState,
     formState: { errors },
     resetField,
-    reset,
     setValue,
   } = useForm<createItemsType>({
     resolver: zodResolver(createItemSchema),
@@ -94,14 +94,6 @@ const CreateItem = () => {
     });
   }
 
-  React.useEffect(() => {
-    if (formState.isSubmitSuccessful) {
-      resetField("name");
-      resetField("description");
-      resetField("category");
-      reset();
-    }
-  }, [formState, reset, resetField]);
   return (
     <form
       className="flex min-w-64 flex-col content-center justify-center gap-2"
@@ -109,38 +101,49 @@ const CreateItem = () => {
     >
       <label className="inline min-w-max ">
         <Input className="inline" placeholder="Nome" {...register("name")} />
-        
       </label>
 
       <Input placeholder="Descrição" {...register("description")} />
 
-      <Select onValueChange={(value) => setValue("category", value)}>
-        <SelectTrigger className="w-full">
-          <SelectValue placeholder="Categoria" />
-        </SelectTrigger>
-
-        <SelectContent>
-          <SelectGroup className="relative">
-            <SelectLabel>Categorias</SelectLabel>
-            {categories?.map((category, index) => (
-              <SelectItem
-                className=" min-w-full hover:bg-slate-400"
-                key={index}
-                value={category.name}
-              >
-                {category.name}
-              </SelectItem>
-            ))}
-          </SelectGroup>
-        </SelectContent>
-      </Select>
-      <ManageCategories />
+      <div className="relative">
+        <Select onValueChange={(value) => setValue("category", value)}>
+          <SelectTrigger className="relative w-full">
+            <SelectValue placeholder="Categoria" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup className="relative">
+              <SelectLabel>Categorias</SelectLabel>
+              {categories?.map((category, index) => (
+                <SelectItem
+                  className=" min-w-full hover:bg-slate-400"
+                  key={index}
+                  value={category.name}
+                >
+                  {category.name}
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+        <div className="absolute -right-8 top-2">
+          <ManageCategories />
+        </div>
+      </div>
       {errors.name && <span className="inline">{errors.name.message}</span>}
-      {errors.description && <span className="inline">{errors.description.message}</span>}
-      {errors.category && <span className="inline">{errors.category.message}</span>}
+      {errors.description && (
+        <span className="inline">{errors.description.message}</span>
+      )}
+      {errors.category && (
+        <span className="inline">{errors.category.message}</span>
+      )}
 
-      
-      <Button className="mx-4 w-max self-end">{!createItem.isPending? 'Criar Item': <LoaderCircle className="animate-spin"/>}</Button>
+      <Button className="mx-4 w-max self-end">
+        {!createItem.isPending ? (
+          "Criar Item"
+        ) : (
+          <LoaderCircle className="animate-spin" />
+        )}
+      </Button>
       <Toaster />
     </form>
   );

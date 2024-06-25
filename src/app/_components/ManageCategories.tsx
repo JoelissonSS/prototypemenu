@@ -11,28 +11,42 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { WrenchIcon } from "lucide-react";
+import { RefreshCw, WrenchIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
 const ManageCategories = () => {
   const getCategories = api.menu.getCategories.useQuery();
   const categories = getCategories.data;
-  
+
   return (
-    <Dialog >
-      <DialogTrigger>
+    <Dialog>
+      <DialogTrigger >
         <WrenchIcon />
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Gerenciar categorias</DialogTitle>
+          <DialogTitle className="flex items-center justify-between py-2">
+            <h2>Gerenciar categorias</h2>{" "}
+            <Button
+              onClick={async () => {
+                await getCategories.refetch({});
+              }}
+            >
+              {!getCategories.isRefetching ? (
+                <RefreshCw />
+              ) : (
+                <RefreshCw className="animate-spin" />
+              )}
+            </Button>
+          </DialogTitle>
           <DialogDescription>
             {categories?.map((category, index) => (
-              <p
-                className=" flex min-w-full justify-between hover:bg-slate-400"
+              <div
+                className=" flex min-w-full justify-between gap-2 items-center hover:bg-slate-100 px-4 "
                 key={index}
               >
                 {category.name}
                 <DeleteCategory name={category.name} />
-              </p>
+              </div>
             ))}
             <CreateCategory />
           </DialogDescription>
